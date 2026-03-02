@@ -1,0 +1,68 @@
+# =========================
+# Build directories
+# =========================
+build/
+cmake-build-*/
+out/
+bin/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Ninja
+build.ninja
+.ninja_log
+.ninja_deps
+
+# =========================
+# macOS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# =========================
+# Executables
+# =========================
+*.exe
+*.out
+*.app
+
+# =========================
+# Object files
+# =========================
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+
+# =========================
+# Debug / profiling
+# =========================
+*.log
+*.prof
+*.gmon
+
+# =========================
+# Editors
+# =========================
+
+# Neovim swap
+*.swp
+*.swo
+
+# VSCode
+.vscode/
+
+# CLion
+.idea/
+
+
+
+.cache/
