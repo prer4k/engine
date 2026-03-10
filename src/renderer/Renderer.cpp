@@ -54,6 +54,32 @@ void Renderer::draw(
         pLoc,1,GL_FALSE,
         glm::value_ptr(proj));
 
+    int lightPosLoc =
+        glGetUniformLocation(
+            shader.ID,
+            "lightPos"
+        );
+
+    glUniform3f(
+        lightPosLoc,
+        2.0f,
+        2.0f,
+        2.0f
+    );
+
+    int lightColorLoc =
+        glGetUniformLocation(
+            shader.ID,
+            "lightColor"
+        );
+
+    glUniform3f(
+        lightColorLoc,
+        1.0f,
+        1.0f,
+        1.0f
+    );
+
     for (auto& obj : scene.getObjects())
     {
         glm::mat4 model = obj.getModel();
