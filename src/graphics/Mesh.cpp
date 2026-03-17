@@ -54,7 +54,47 @@ Mesh::Mesh(const std::vector<float>& vertices,
     glEnableVertexAttribArray(2);
 }
 
-void Mesh::draw()
+Mesh::~Mesh()
+{
+    if (VBO != 0)
+        glDeleteBuffers(1, &VBO);
+    if (VAO != 0)
+        glDeleteVertexArrays(1, &VAO);
+}
+
+Mesh::Mesh(Mesh&& other) noexcept
+{
+    VAO = other.VAO;
+    VBO = other.VBO;
+    vertexCount = other.vertexCount;
+
+    other.VAO = 0;
+    other.VBO = 0;
+    other.vertexCount = 0;
+}
+
+Mesh& Mesh::operator=(Mesh&& other) noexcept
+{
+    if (this == &other)
+        return *this;
+
+    if (VBO != 0)
+        glDeleteBuffers(1, &VBO);
+    if (VAO != 0)
+        glDeleteVertexArrays(1, &VAO);
+
+    VAO = other.VAO;
+    VBO = other.VBO;
+    vertexCount = other.vertexCount;
+
+    other.VAO = 0;
+    other.VBO = 0;
+    other.vertexCount = 0;
+
+    return *this;
+}
+
+void Mesh::draw() const
 {
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, vertexCount);

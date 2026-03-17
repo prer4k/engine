@@ -29,8 +29,6 @@ Window::Window(int width, int height, const char* title)
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
     }    
-
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 GLFWwindow* Window::get()

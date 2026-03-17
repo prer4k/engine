@@ -36,78 +36,63 @@ void Renderer::setModel(Shader& shader,
 }
 
 void Renderer::draw(
-    Scene& scene,
-    Shader& shader,
-    Camera& camera)
+    const Scene& scene,
+    const Camera& camera,
+    const RenderParams& params)
 {
-    glm::mat4 view = camera.getViewMatrix();
-    glm::mat4 proj = camera.getProjectionMatrix();
+    const glm::mat4 view = camera.getViewMatrix();
+    const glm::mat4 proj = camera.getProjectionMatrix();
 
-    int vLoc = glGetUniformLocation(shader.ID,"view");
-    int pLoc = glGetUniformLocation(shader.ID,"projection");
-
-    glUniformMatrix4fv(
-        vLoc,1,GL_FALSE,
-        glm::value_ptr(view));
-
-    glUniformMatrix4fv(
-        pLoc,1,GL_FALSE,
-        glm::value_ptr(proj));
-
-    int lightPosLoc =
-        glGetUniformLocation(
-            shader.ID,
-            "lightPos"
-        );
-
-    glUniform3f(
-        lightPosLoc,
-        2.0f,
-        2.0f,
-        2.0f
-    );
-
-    int lightColorLoc =
-        glGetUniformLocation(
-            shader.ID,
-            "lightColor"
-        );
-
-    glUniform3f(
-        lightColorLoc,
-        1.0f,
-        1.0f,
-        1.0f
-    );
-
-    for (auto& obj : scene.getObjects())
+    for (const auto& obj : scene.getObjects())
     {
-        glm::mat4 model = obj.getModel();
+        const Material& mat = obj.getMaterial();
+        if (!mat.shader)
+            continue;
 
-        int mLoc = glGetUniformLocation(
-            shader.ID,
-            "model"
-        );
+        mat.shader->use();
 
-        glUniformMatrix4fv(
-            mLoc,
-            1,
-            GL_FALSE,
-            glm::value_ptr(model)
-        );
+        // common matrices
+        const int vLoc = glGetUniformLocation(mat.shader->ID, "view");
+        const int pLoc = glGetUniformLocation(mat.shader->ID, "projection");
+        const int mLoc = glGetUniformLocation(mat.shader->ID, "model");
 
-        // bind texture
-        glActiveTexture(GL_TEXTURE0);
-        obj.texture.bind();
+        glUniformMatrix4fv(vLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(pLoc, 1, GL_FALSE, glm::value_ptr(proj));
 
-        int texLoc =
-            glGetUniformLocation(
-                shader.ID,
-                "tex"
-            );
+        const glm::mat4 model = obj.getModel();
+        glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        glUniform1i(texLoc, 0);
+        // lighting (if shader uses it)
+        const int lightPosLoc = glGetUniformLocation(mat.shader->ID, "lightPos");
+        if (lightPosLoc != -1)
+            glUniform3f(lightPosLoc, params.lightPos.x, params.lightPos.y, params.lightPos.z);
 
-        obj.mesh.draw();
+        const int lightColorLoc = glGetUniformLocation(mat.shader->ID, "lightColor");
+        if (lightColorLoc != -1)
+            glUniform3f(lightColorLoc, params.lightColor.x, params.lightColor.y, params.lightColor.z);
+
+        // material params (optional uniforms)
+        const int baseColorLoc = glGetUniformLocation(mat.shader->ID, "baseColor");
+        if (baseColorLoc != -1)
+            glUniform3f(baseColorLoc, mat.baseColor.x, mat.baseColor.y, mat.baseColor.z);
+
+        const int useTextureLoc = glGetUniformLocation(mat.shader->ID, "useTexture");
+        if (useTextureLoc != -1)
+            glUniform1i(useTextureLoc, mat.albedo ? 1 : 0);
+
+        const int toonStepsLoc = glGetUniformLocation(mat.shader->ID, "toonSteps");
+        if (toonStepsLoc != -1)
+            glUniform1f(toonStepsLoc, mat.toonSteps);
+
+        // albedo texture (optional)
+        const int texLoc = glGetUniformLocation(mat.shader->ID, "tex");
+        if (texLoc != -1 && mat.albedo)
+        {
+            glActiveTexture(GL_TEXTURE0);
+            mat.albedo->bind();
+            glUniform1i(texLoc, 0);
+        }
+
+        obj.getMesh().draw();
     }
 }

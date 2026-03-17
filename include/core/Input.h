@@ -5,16 +5,14 @@
 class Input
 {
 public:
+    explicit Input(GLFWwindow* window);
 
-    static void setWindow(GLFWwindow* window);
+    bool isKeyPressed(int key) const;
+    bool isMousePressed(int button) const;
 
-    static bool isKeyPressed(int key);
-    static bool isMousePressed(int button);
-
-    static double getMouseX();
-    static double getMouseY();
+    double getMouseX() const;
+    double getMouseY() const;
 
 private:
-
-    static GLFWwindow* window;
+    GLFWwindow* window;
 };

@@ -6,15 +6,23 @@ class Mesh
 {
 private:
 
-    unsigned int VAO;
-    unsigned int VBO;
+    unsigned int VAO = 0;
+    unsigned int VBO = 0;
 
-    int vertexCount;
+    int vertexCount = 0;
 
 public:
 
     Mesh(const std::vector<float>& vertices,
          int stride);
 
-    void draw();
+    ~Mesh();
+
+    Mesh(const Mesh&) = delete;
+    Mesh& operator=(const Mesh&) = delete;
+
+    Mesh(Mesh&& other) noexcept;
+    Mesh& operator=(Mesh&& other) noexcept;
+
+    void draw() const;
 };

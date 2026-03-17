@@ -1,28 +1,13 @@
 #include "camera/Camera.h"
-#include "core/Input.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 Camera::Camera(float aspect)
 {
-    position = {0.0f, 0.0f, 5.0f};
-
     this->aspect = aspect;
-
-    fov = 45.0f;
-    nearPlane = 0.1f;
-    farPlane = 100.0f;
-    speed = 2.5f;
-
-    yaw = -90.0f;
-    pitch = 0.0f;
-
-    sensitivity = 0.1f;
-
-    firstMouse = true;
 }
 
-glm::mat4 Camera::getViewMatrix()
+glm::mat4 Camera::getViewMatrix() const
 {
     glm::vec3 front;
 
@@ -46,7 +31,7 @@ glm::mat4 Camera::getViewMatrix()
     );
 }
 
-glm::mat4 Camera::getProjectionMatrix()
+glm::mat4 Camera::getProjectionMatrix() const
 {
     return glm::perspective(
         glm::radians(fov),
@@ -56,55 +41,7 @@ glm::mat4 Camera::getProjectionMatrix()
     );
 }
 
-void Camera::update(float dt)
-{
-    glm::vec3 front = getFront();
-
-    glm::vec3 right =
-        glm::normalize(
-            glm::cross(
-                front,
-                glm::vec3(0,1,0)
-            )
-        );
-
-    if (Input::isKeyPressed(GLFW_KEY_W))
-        position += front * speed * dt;
-
-    if (Input::isKeyPressed(GLFW_KEY_S))
-        position -= front * speed * dt;
-
-    if (Input::isKeyPressed(GLFW_KEY_A))
-        position -= right * speed * dt;
-
-    if (Input::isKeyPressed(GLFW_KEY_D))
-        position += right * speed * dt;
-
-
-    double x = Input::getMouseX();
-    double y = Input::getMouseY();
-
-    if (firstMouse)
-    {
-        lastX = x;
-        lastY = y;
-        firstMouse = false;
-    }
-
-    double dx = x - lastX;
-    double dy = lastY - y;
-
-    lastX = x;
-    lastY = y;
-
-    yaw += dx * sensitivity;
-    pitch += dy * sensitivity;
-
-    if (pitch > 89.0f) pitch = 89.0f;
-    if (pitch < -89.0f) pitch = -89.0f;
-}
-
-glm::vec3 Camera::getFront()
+glm::vec3 Camera::getFront() const
 {
     glm::vec3 front;
 
@@ -122,7 +59,7 @@ glm::vec3 Camera::getFront()
     return glm::normalize(front);
 }
 
-void Camera::resetMouse()
+void Camera::setAspect(float aspect)
 {
-    firstMouse = true;
+    this->aspect = aspect;
 }

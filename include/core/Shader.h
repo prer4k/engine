@@ -3,10 +3,17 @@
 
 class Shader {
 public:
-    unsigned int ID;
+    unsigned int ID = 0;
 
     Shader(const std::string& vertexPath,
            const std::string& fragmentPath);
+    ~Shader();
 
-    void use();
+    Shader(const Shader&) = delete;
+    Shader& operator=(const Shader&) = delete;
+
+    Shader(Shader&& other) noexcept;
+    Shader& operator=(Shader&& other) noexcept;
+
+    void use() const;
 };

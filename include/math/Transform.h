@@ -12,5 +12,5 @@ public:
 
     Transform();
 
-    glm::mat4 getModelMatrix();
+    glm::mat4 getModelMatrix() const;
 };

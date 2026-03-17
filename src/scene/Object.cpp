@@ -1,78 +1,39 @@
 #include "scene/Object.h"
-std::vector<float> cube = {
 
-    // front 
-    -0.5,-0.5, 0.5, 0,0,1, 0,0,
-     0.5,-0.5, 0.5, 0,0,1, 1,0,
-     0.5, 0.5, 0.5, 0,0,1, 1,1,
+#include <utility>
 
-     0.5, 0.5, 0.5, 0,0,1, 1,1,
-    -0.5, 0.5, 0.5, 0,0,1, 0,1,
-    -0.5,-0.5, 0.5, 0,0,1, 0,0,
-
-
-    // back 
-    -0.5,-0.5,-0.5, 0,0,-1, 0,0,
-     0.5,-0.5,-0.5, 0,0,-1, 1,0,
-     0.5, 0.5,-0.5, 0,0,-1, 1,1,
-
-     0.5, 0.5,-0.5, 0,0,-1, 1,1,
-    -0.5, 0.5,-0.5, 0,0,-1, 0,1,
-    -0.5,-0.5,-0.5, 0,0,-1, 0,0,
-
-
-    // left
-    -0.5, 0.5, 0.5, -1,0,0, 1,1,
-    -0.5, 0.5,-0.5, -1,0,0, 0,1,
-    -0.5,-0.5,-0.5, -1,0,0, 0,0,
-
-    -0.5,-0.5,-0.5, -1,0,0, 0,0,
-    -0.5,-0.5, 0.5, -1,0,0, 1,0,
-    -0.5, 0.5, 0.5, -1,0,0, 1,1,
-
-
-    // right 
-     0.5, 0.5, 0.5, 1,0,0, 1,1,
-     0.5, 0.5,-0.5, 1,0,0, 0,1,
-     0.5,-0.5,-0.5, 1,0,0, 0,0,
-
-     0.5,-0.5,-0.5, 1,0,0, 0,0,
-     0.5,-0.5, 0.5, 1,0,0, 1,0,
-     0.5, 0.5, 0.5, 1,0,0, 1,1,
-
-
-    // top 
-    -0.5, 0.5,-0.5, 0,1,0, 0,1,
-     0.5, 0.5,-0.5, 0,1,0, 1,1,
-     0.5, 0.5, 0.5, 0,1,0, 1,0,
-
-     0.5, 0.5, 0.5, 0,1,0, 1,0,
-    -0.5, 0.5, 0.5, 0,1,0, 0,0,
-    -0.5, 0.5,-0.5, 0,1,0, 0,1,
-
-
-    // bottom 
-    -0.5,-0.5,-0.5, 0,-1,0, 0,1,
-     0.5,-0.5,-0.5, 0,-1,0, 1,1,
-     0.5,-0.5, 0.5, 0,-1,0, 1,0,
-
-     0.5,-0.5, 0.5, 0,-1,0, 1,0,
-    -0.5,-0.5, 0.5, 0,-1,0, 0,0,
-    -0.5,-0.5,-0.5, 0,-1,0, 0,1,
-};
-Object::Object(glm::vec3 pos)
-: mesh(cube, 8),
-texture("assets/image.JPG")
+Object::Object(glm::vec3 pos,
+               std::shared_ptr<Mesh> mesh,
+               std::shared_ptr<Material> material)
+: mesh(std::move(mesh)),
+  material(std::move(material))
 {
     transform.position = pos;
 }
 
-void Object::update(float time)
+void Object::update(float time, float dt)
 {
+    if (behavior)
+    {
+        behavior(*this, time, dt);
+        return;
+    }
+
+    (void)dt;
     animation.update(transform, time);
 }
 
-glm::mat4 Object::getModel()
+glm::mat4 Object::getModel() const
 {
     return transform.getModelMatrix();
+}
+
+const Mesh& Object::getMesh() const
+{
+    return *mesh;
+}
+
+const Material& Object::getMaterial() const
+{
+    return *material;
 }

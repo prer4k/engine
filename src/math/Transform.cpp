@@ -9,7 +9,7 @@ Transform::Transform()
     scale    = {1.0f, 1.0f, 1.0f};
 }
 
-glm::mat4 Transform::getModelMatrix()
+glm::mat4 Transform::getModelMatrix() const
 {
     glm::mat4 model(1.0f);
 
